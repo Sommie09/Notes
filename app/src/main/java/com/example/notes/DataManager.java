@@ -30,6 +30,10 @@ public class DataManager {
         return mNotes;
     }
 
+    public List<CourseInfo> getCourses() {
+        return mCourses;
+    }
+
     public int createNewNote() {
         NoteInfo note = new NoteInfo(null, null, null);
         mNotes.add(note);
@@ -49,9 +53,6 @@ public class DataManager {
         mNotes.remove(index);
     }
 
-    public List<CourseInfo> getCourses() {
-        return mCourses;
-    }
 
     public CourseInfo getCourse(String id) {
         for (CourseInfo course : mCourses) {
