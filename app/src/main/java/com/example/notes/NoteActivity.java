@@ -3,13 +3,8 @@ package com.example.notes;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,9 +15,15 @@ import android.widget.Spinner;
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
-    public static final String NOTE_INFO = "com.example.notes.NOTE_INFO";
+    public static final String NOTE_POSITION = "com.example.notes.NOTE_POSITION";
+    public static final int POSITION_NOT_SET = -1;
     private NoteInfo mNote;
     private boolean mIsNewNote;
+    private Spinner mSpinnerCourses;
+    private EditText mTextNoteTitle;
+    private EditText mTextNoteText;
+    private int mNotePosition;
+    private boolean mIsCancelling;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,7 @@ public class NoteActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //Identify Spinner
-        Spinner spinnerCourses = findViewById(R.id.spinner_courses);
+        mSpinnerCourses = findViewById(R.id.spinner_courses);
 
         //Get courses from the data manager in a list
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
@@ -43,15 +44,15 @@ public class NoteActivity extends AppCompatActivity {
 
         //List view for spinner
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCourses.setAdapter(adapterCourses);
+        mSpinnerCourses.setAdapter(adapterCourses);
 
         readDisplayStateValues();
 
-        EditText textNoteTitle = findViewById(R.id.text_note_title);
-        EditText textNoteText = findViewById(R.id.text_note_text);
+        mTextNoteTitle = findViewById(R.id.text_note_title);
+        mTextNoteText = findViewById(R.id.text_note_text);
 
         if(!mIsNewNote) {
-            displayNotes(spinnerCourses, textNoteTitle, textNoteText);
+            displayNotes(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
         }
 
     }
@@ -69,12 +70,23 @@ public class NoteActivity extends AppCompatActivity {
     private void readDisplayStateValues() {
         //Get data from list
         Intent intent = getIntent();
-        mNote = intent.getParcelableExtra(NOTE_INFO);
+        int position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
 
         //New note
-        mIsNewNote = mNote == null;
+        mIsNewNote = position == POSITION_NOT_SET;
+        if(mIsNewNote){
+            createNewNote();
+        }else{
+            mNote = DataManager.getInstance().getNotes().get(position);
+        }
+    }
 
+    private void createNewNote() {
+        DataManager dataManager = DataManager.getInstance();
 
+        //Position of the newly created note
+        mNotePosition = dataManager.createNewNote();
+        mNote = dataManager.getNotes().get(mNotePosition);
     }
 
     @Override
@@ -82,6 +94,29 @@ public class NoteActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_note, menu);
         return true;
+    }
+
+    /**
+     * Dispatch onPause() to fragments.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //Check if its cancelled
+        if(mIsCancelling){
+            //Check if its a new note
+            if(mIsNewNote)
+                DataManager.getInstance().removeNote(mNotePosition);
+        }  else {
+            saveNote();
+        }
+    }
+
+    private void saveNote()  {
+        mNote.setCourse((CourseInfo) mSpinnerCourses.getSelectedItem());
+        mNote.setTitle(mTextNoteTitle.getText().toString());
+        mNote.setText(mTextNoteText.getText().toString());
     }
 
     @Override
@@ -92,10 +127,31 @@ public class NoteActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_email) {
+            sendEmail();
             return true;
+        }else if(id == R.id.action_cancel){
+            mIsCancelling = true;
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendEmail() {
+        CourseInfo course = (CourseInfo) mSpinnerCourses.getSelectedItem();
+        String subject = mTextNoteTitle.getText().toString();
+        String text = "Checkout what i learned in the PluralSight Course \""+ course.getTitle() + "\"\n" +
+                mTextNoteText.getText();
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc2822");
+
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, text);
+
+        startActivity(intent);
+
+
     }
 }
