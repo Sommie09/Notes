@@ -37,12 +37,6 @@ public class NoteListActivity extends AppCompatActivity {
         initializeDisplayContent();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mAdapterNotes.notifyDataSetChanged();
-    }
-
     //Method to populate NoteList
     private void initializeDisplayContent() {
         final ListView listNotes = findViewById(R.id.list_notes);
@@ -58,12 +52,19 @@ public class NoteListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
 
-                //Corresponding to user selection
+                  //Corresponding to user selection
 //                NoteInfo note = (NoteInfo) listNotes.getItemAtPosition(position);
                 intent.putExtra(NoteActivity.NOTE_POSITION, position);
-
                 startActivity(intent);
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapterNotes.notifyDataSetChanged();
+    }
+
+
 }
