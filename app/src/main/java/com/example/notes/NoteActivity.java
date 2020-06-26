@@ -183,9 +183,36 @@ public class NoteActivity extends AppCompatActivity {
         }else if(id == R.id.action_cancel){
             mIsCancelling = true;
             finish();
+        }else if(id == R.id.action_next){
+            moveNext();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        MenuItem item = menu.findItem(R.id.action_next);
+        int lastNoteIndex = DataManager.getInstance().getNotes().size()-1;
+
+        item.setEnabled(mNotePosition < lastNoteIndex);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void moveNext() {
+        //Save current note before advancing
+        saveNote();
+
+        //get next note position
+        ++mNotePosition;
+        mNote = DataManager.getInstance().getNotes().get(mNotePosition);
+
+        //Save current changes
+        saveOriginalNoteValues();
+        displayNotes(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
+
+        invalidateOptionsMenu();
     }
 
     private void sendEmail() {

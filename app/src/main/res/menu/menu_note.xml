@@ -5,13 +5,20 @@
 
     <item
         android:id="@+id/action_cancel"
+        android:icon="@android:drawable/ic_menu_revert"
         android:orderInCategory="100"
         android:title="@string/action_cancel"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
-     <item
+    <item
+        android:id="@+id/action_next"
+        android:icon="@android:drawable/ic_media_next"
+        android:orderInCategory="101"
+        android:title="Next"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_email"
-        android:orderInCategory="100"
+        android:orderInCategory="300"
         android:title="@string/action_email"
         app:showAsAction="never" />
 
