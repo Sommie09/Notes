@@ -26,6 +26,7 @@ public class NoteListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -42,25 +43,6 @@ public class NoteListActivity extends AppCompatActivity {
 
     //Method to populate NoteList
     private void initializeDisplayContent() {
-//        final ListView listNotes = findViewById(R.id.list_notes);
-//
-//        List<NoteInfo> notes = DataManager.getInstance().getNotes();
-//
-//        mAdapterNotes = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
-//
-//        listNotes.setAdapter(mAdapterNotes);
-//
-//        listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
-//
-//                  //Corresponding to user selection
-////                NoteInfo note = (NoteInfo) listNotes.getItemAtPosition(position);
-//                intent.putExtra(NoteActivity.NOTE_POSITION, position);
-//                startActivity(intent);
-//            }
-//        });
 
         final RecyclerView recyclerNotes = findViewById(R.id.list_notes);
         final LinearLayoutManager notesLayoutManager = new LinearLayoutManager(this);
@@ -69,8 +51,6 @@ public class NoteListActivity extends AppCompatActivity {
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
         recyclerNotes.setAdapter(mNoteRecyclerAdapter);
-
-
     }
 
     @Override

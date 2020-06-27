@@ -20,7 +20,7 @@ import java.util.List;
 public class NoteActivity extends AppCompatActivity {
     private final String TAG = getClass().getSimpleName();
     public static final String NOTE_POSITION = "com.example.notes.NOTE_POSITION";
-    public static final int POSITION_NOT_SET = -1;
+    public static final int POSITION_NOT_SET = 1;
     private NoteInfo mNote;
     private boolean mIsNewNote;
     private Spinner mSpinnerCourses;
@@ -34,6 +34,7 @@ public class NoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -72,7 +73,6 @@ public class NoteActivity extends AppCompatActivity {
             displayNotes(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
         }
 
-        Log.d(TAG, "onCreate");
 
     }
 
