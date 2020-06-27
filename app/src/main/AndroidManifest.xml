@@ -29,7 +29,8 @@
         <activity
             android:name=".NoteActivity"
             android:label="@string/edit"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
