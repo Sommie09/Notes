@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".NoteKeeper"
+            android:label="@string/title_activity_settings">
+
+        </activity>
+        <activity
             android:name=".NoteKeeper"
             android:label="@string/title_activity_note_keeper"
             android:theme="@style/AppTheme.NoActionBar">
@@ -25,12 +31,12 @@
             android:name=".NoteListActivity"
             android:label="@string/title_activity_note_list"
             android:theme="@style/AppTheme.NoActionBar">
+
         </activity>
         <activity
             android:name=".NoteActivity"
             android:label="@string/edit"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

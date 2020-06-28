@@ -1,11 +1,13 @@
 package com.example.notes;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -15,13 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +50,10 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
                 startActivity(new Intent(NoteKeeper.this, NoteActivity.class));
             }
         });
+
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_notification, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -111,6 +114,23 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
     protected void onResume() {
         super.onResume();
         mNoteRecyclerAdapter.notifyDataSetChanged();
+        updateNavHeader();
+    }
+
+    private void updateNavHeader() {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+
+        TextView textUserName = headerView.findViewById(R.id.text_user_name);
+        TextView textEmailAddress = headerView.findViewById(R.id.text_email_address);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String username = sharedPreferences.getString("user_display_name", "");
+        String email = sharedPreferences.getString("user_email_address", "");
+
+        textUserName.setText(username);
+        textEmailAddress.setText(email);
+
     }
 
     @Override
@@ -128,19 +148,18 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
                 displayNotes();
         }else if(id == R.id.nav_courses){
             displayCourses();
+        }else if(id == R.id.nav_share){
+
+        }else if(id == R.id.nav_send){
 
         }
 
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout mDrawerLayout =  findViewById(R.id.drawer_layout);
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
 
     }
 
-    public void handleSelection(String message){
-        View view = findViewById(R.id.list_items);
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
-    }
 
     @Override
     public void onBackPressed() {
@@ -150,5 +169,17 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.action_settings){
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
