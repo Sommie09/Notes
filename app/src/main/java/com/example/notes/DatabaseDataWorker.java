@@ -22,16 +22,16 @@ public class DatabaseDataWorker {
     }
 
     public void insertSampleNotes() {
-        insertNote("android_intents", "Dynamic intent resolution", "Wow, intents allow components to be resolved at runtime");
-        insertNote("android_intents", "Delegating intents", "PendingIntents are powerful; they delegate much more than just a component invocation");
+        insertNote("android_intents", "Dynamic33 intent resolution", "Wow, intents allow components to be resolved at runtime");
+        insertNote("android_intents", "Delegating44 intents", "PendingIntents are powerful; they delegate much more than just a component invocation");
 
-        insertNote("android_async", "Service default threads", "Did you know that by default an Android Service will tie up the UI thread?");
-        insertNote("android_async", "Long running operations", "Foreground Services can be tied to a notification icon");
+        insertNote("android_async", "Service default threads44", "Did you know that by default an Android Service will tie up the UI thread?");
+        insertNote("android_async", "Long running operations55", "Foreground Services can be tied to a notification icon");
 
-        insertNote("java_lang", "Parameters", "Leverage variable-length parameter lists?");
+        insertNote("java_lang", "Parameters", "Leverage66 variable-length parameter lists?");
         insertNote("java_lang", "Anonymous classes", "Anonymous classes simplify implementing one-use types");
 
-        insertNote("java_core", "Compiler options", "The -jar option isn't compatible with with the -cp option");
+        insertNote("java_core", "Compiler options", "The77 -jar option isn't compatible with with the -cp option");
         insertNote("java_core", "Serialization", "Remember to include SerialVersionUID to assure version compatibility");
     }
 

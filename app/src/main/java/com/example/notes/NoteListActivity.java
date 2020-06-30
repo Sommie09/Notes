@@ -41,6 +41,7 @@ public class NoteListActivity extends AppCompatActivity {
         initializeDisplayContent();
     }
 
+
     //Method to populate NoteList
     private void initializeDisplayContent() {
 

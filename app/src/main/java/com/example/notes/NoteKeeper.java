@@ -80,6 +80,7 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
 
     //Method to populate NoteList
     private void initializeDisplayContent() {
+        DataManager.loadFromDatabase(mNoteKeeperOpenHelper);
         mRecyclerItems = findViewById(R.id.list_items);
 
         mNotesLayoutManager = new LinearLayoutManager(this);
@@ -117,7 +118,6 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
         mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
 
-        SQLiteDatabase db = mNoteKeeperOpenHelper.getReadableDatabase();
 
         selectNavigationMenuItem(R.id.nav_notes);
 
