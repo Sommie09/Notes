@@ -2,6 +2,7 @@ package com.example.notes;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.example.notes.NoteKeeperDatabaseContract.NoteInfoEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -86,15 +88,14 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
         mNotesLayoutManager = new LinearLayoutManager(this);
         mCourseLayoutManager = new GridLayoutManager(this,getResources().getInteger(R.integer.course_grid_span));
 
-        List<NoteInfo> notes = DataManager.getInstance().getNotes();
-        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
+        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, null);
 
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
         mCourseRecyclerAdapter = new CourseRecyclerAdapter(this, courses);
 
 
         displayNotes();
-        displayCourses();
+       // displayCourses();
 
 
     }
@@ -126,8 +127,27 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
     @Override
     protected void onResume() {
         super.onResume();
-        mNoteRecyclerAdapter.notifyDataSetChanged();
+        loadNotes();
         updateNavHeader();
+    }
+
+    private void loadNotes() {
+        SQLiteDatabase db = mNoteKeeperOpenHelper.getReadableDatabase();
+        //Query Notes
+        String[] noteColumns = {
+                NoteInfoEntry.COLUMN_NOTE_TITLE,
+                NoteInfoEntry.COLUMN_COURSE_ID,
+                NoteInfoEntry._ID};
+
+        String noteOrderBy = NoteInfoEntry.COLUMN_COURSE_ID + ", " + NoteInfoEntry.COLUMN_NOTE_TITLE;
+        Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME,
+                noteColumns,
+                null,
+                null,
+                null,
+                null,
+                noteOrderBy);
+        mNoteRecyclerAdapter.changeCursor(noteCursor);
     }
 
     private void updateNavHeader() {
