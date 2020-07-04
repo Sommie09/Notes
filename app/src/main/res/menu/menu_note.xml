@@ -22,5 +22,11 @@
         android:title="@string/action_email"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_set_reminder"
+        android:orderInCategory="300"
+        android:title="@string/action_set_reminder"
+        app:showAsAction="never" />
+
 
 </menu>

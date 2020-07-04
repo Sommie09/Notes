@@ -1,5 +1,6 @@
 package com.example.notes;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.example.notes.NoteKeeperDatabaseContract.NoteInfoEntry;
@@ -24,6 +26,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,7 +37,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
+    public static final int LOADER_NOTES = 0;
 
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
     private RecyclerView mRecyclerItems;
@@ -119,7 +126,6 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
         mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
 
-
         selectNavigationMenuItem(R.id.nav_notes);
 
     }
@@ -190,6 +196,49 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
         DrawerLayout mDrawerLayout =  findViewById(R.id.drawer_layout);
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
+
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader loader = null;
+        if(id == LOADER_NOTES) {
+            loader = new CursorLoader(this) {
+                @Override
+                public Cursor loadInBackground() {
+                    SQLiteDatabase db = mNoteKeeperOpenHelper.getReadableDatabase();
+                    final String[] noteColumns = {
+                            NoteInfoEntry.getQName(NoteInfoEntry._ID),
+                            NoteInfoEntry.COLUMN_NOTE_TITLE,
+                            NoteKeeperDatabaseContract.CourseInfoEntry.COLUMN_COURSE_TITLE
+                    };
+
+                    final String noteOrderBy = NoteKeeperDatabaseContract.CourseInfoEntry.COLUMN_COURSE_TITLE +
+                            "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
+
+                    // note_info JOIN course_info ON note_info.course_id = course_info.course_id
+                    String tablesWithJoin = NoteInfoEntry.TABLE_NAME + " JOIN " +
+                            NoteKeeperDatabaseContract.CourseInfoEntry.TABLE_NAME + " ON " +
+                            NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + " = " +
+                            NoteKeeperDatabaseContract.CourseInfoEntry.getQName( NoteKeeperDatabaseContract.CourseInfoEntry.COLUMN_COURSE_ID);
+
+                    return db.query(tablesWithJoin, noteColumns,
+                            null, null, null, null, noteOrderBy);
+                }
+            };
+        }
+        return loader;
+    }
+
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+
+    }
+
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
 
     }
 
