@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -79,6 +80,8 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
         navigationView.setNavigationItemSelectedListener(this);
 
         initializeDisplayContent();
+
+        //getLoaderManager().initLoader(LOADER_NOTES, null, this)
     }
 
     @Override
@@ -201,44 +204,23 @@ public class NoteKeeper extends AppCompatActivity implements NavigationView.OnNa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader loader = null;
-        if(id == LOADER_NOTES) {
-            loader = new CursorLoader(this) {
-                @Override
-                public Cursor loadInBackground() {
-                    SQLiteDatabase db = mNoteKeeperOpenHelper.getReadableDatabase();
-                    final String[] noteColumns = {
-                            NoteInfoEntry.getQName(NoteInfoEntry._ID),
-                            NoteInfoEntry.COLUMN_NOTE_TITLE,
-                            NoteKeeperDatabaseContract.CourseInfoEntry.COLUMN_COURSE_TITLE
-                    };
+        Uri uri = Uri.parse("content://com.example.notes.provider");
+        String [] columns= {"_id, course_title", "course_id"};
 
-                    final String noteOrderBy = NoteKeeperDatabaseContract.CourseInfoEntry.COLUMN_COURSE_TITLE +
-                            "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
-
-                    // note_info JOIN course_info ON note_info.course_id = course_info.course_id
-                    String tablesWithJoin = NoteInfoEntry.TABLE_NAME + " JOIN " +
-                            NoteKeeperDatabaseContract.CourseInfoEntry.TABLE_NAME + " ON " +
-                            NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + " = " +
-                            NoteKeeperDatabaseContract.CourseInfoEntry.getQName( NoteKeeperDatabaseContract.CourseInfoEntry.COLUMN_COURSE_ID);
-
-                    return db.query(tablesWithJoin, noteColumns,
-                            null, null, null, null, noteOrderBy);
-                }
-            };
-        }
-        return loader;
+        return new CursorLoader(this, uri, columns, null, null, "course_title");
     }
 
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
 
+
     }
 
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
 
     }
 
